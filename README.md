@@ -5,6 +5,29 @@ See the [whitepaper](https://github.com/ubahn/whitepaper) for generic informatio
 
 ## Example
 
+Conversation definition in `weather-report.yml`:
+
+```yaml
+version: 1
+
+sequence:
+  - welcome
+  - weather-report
+
+triggers:
+  - i-user-welcome
+
+fallback: clarification
+
+outputs:
+  welcome:
+    i-yes: next
+    i-no: bye
+    fallback: welcome-clarification
+```
+
+Business logic:
+
 ```go
 // inputFactory should be specific to your app and produce instances of ubahn.IInput.
 // Of course you may produce them in a different way.
