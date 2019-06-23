@@ -21,8 +21,9 @@ fallback: clarification
 
 outputs:
   welcome:
-    i-yes: next
-    i-no: bye
+    expectedInputs:
+      i-yes: next
+      i-no: bye
     fallback: welcome-clarification
 ```
 

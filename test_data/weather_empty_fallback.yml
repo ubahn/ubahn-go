@@ -1,0 +1,8 @@
+version: 1
+
+sequence:
+
+fallback: clarification
+
+triggers:
+  - i-user-welcome
