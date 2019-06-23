@@ -3,6 +3,10 @@
 Golang implementation of the conversation structuring framework Ubahn.
 See the [whitepaper](https://github.com/ubahn/whitepaper) for generic information on Ubahn.
 
+[![Build Status](https://travis-ci.org/ubahn/ubahn-go.svg?branch=master)](https://travis-ci.org/ubahn/ubahn-go)
+[![Maintainability](https://api.codeclimate.com/v1/badges/7c6ac2dd052e2c817a90/maintainability)](https://codeclimate.com/github/ubahn/ubahn-go/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/7c6ac2dd052e2c817a90/test_coverage)](https://codeclimate.com/github/ubahn/ubahn-go/test_coverage)
+
 ## Example
 
 Conversation definition in `weather-report.yml`:
