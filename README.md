@@ -4,8 +4,10 @@ Golang implementation of the conversation structuring framework Ubahn.
 See the [whitepaper](https://github.com/ubahn/whitepaper) for generic information on Ubahn.
 
 [![Build Status](https://travis-ci.org/ubahn/ubahn-go.svg?branch=master)](https://travis-ci.org/ubahn/ubahn-go)
+[![Build status](https://ci.appveyor.com/api/projects/status/xo85r9pinevo74f1?svg=true)](https://ci.appveyor.com/project/slavikdev/ubahn-go)
 [![Maintainability](https://api.codeclimate.com/v1/badges/7c6ac2dd052e2c817a90/maintainability)](https://codeclimate.com/github/ubahn/ubahn-go/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/7c6ac2dd052e2c817a90/test_coverage)](https://codeclimate.com/github/ubahn/ubahn-go/test_coverage)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ubahn/ubahn-go)](https://goreportcard.com/report/github.com/ubahn/ubahn-go)
+[![GoDoc](https://godoc.org/github.com/ubahn/ubahn-go?status.svg)](https://godoc.org/github.com/ubahn/ubahn-go)
 
 ## Example
 
