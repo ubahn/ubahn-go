@@ -56,19 +56,16 @@ func (conv *Conversation) firstOutputName() string {
 func (conv *Conversation) matchOutput(prevOutput core.IOutput, input core.IInput) string {
 	prevOutputConfig := conv.findPrevOutputConfig(prevOutput)
 	if prevOutputConfig.empty {
-		return conv.fallback()
+		return conv.resolveOutputName(conv.fallback(), prevOutput.Name())
 	}
 	output := prevOutputConfig.ExpectedInputs[input.Name()]
 	if len(output) == 0 {
 		if len(prevOutputConfig.Fallback) > 0 {
-			return prevOutputConfig.Fallback
+			return conv.resolveOutputName(prevOutputConfig.Fallback, prevOutput.Name())
 		}
-		return conv.fallback()
+		return conv.resolveOutputName(conv.fallback(), prevOutput.Name())
 	}
-	if output == core.NextOutputName {
-		return conv.findNextOutput(prevOutput.Name())
-	}
-	return output
+	return conv.resolveOutputName(output, prevOutput.Name())
 }
 
 func (conv *Conversation) fallback() string {
@@ -99,4 +96,11 @@ func (conv *Conversation) findNextOutput(prevOutputName string) string {
 		}
 	}
 	return conv.fallback()
+}
+
+func (conv *Conversation) resolveOutputName(outputName, prevOutputName string) string {
+	if outputName == core.NextOutputName {
+		return conv.findNextOutput(prevOutputName)
+	}
+	return outputName
 }

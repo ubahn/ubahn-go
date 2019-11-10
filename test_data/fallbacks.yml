@@ -1,0 +1,19 @@
+version: 1
+
+sequence:
+  - a
+  - b
+  - c
+  - d
+
+triggers:
+  - i-any
+
+fallback: d
+
+outputs:
+  a:
+    expectedInputs:
+      i-yes: next
+      i-no: c
+    fallback: next

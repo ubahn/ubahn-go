@@ -16,17 +16,28 @@ func TestNewConversation(t *testing.T) {
 }
 
 func TestContinue(t *testing.T) {
-	conv, nextOutputName := startConversation("../test_data/weather.yml", "i-user-welcome")
-	assert.Equal(t, "welcome", nextOutputName)
+	conv, outputName := startConversation("../test_data/weather.yml", "i-user-welcome")
+	assert.Equal(t, "welcome", outputName)
 
-	nextOutputName = continueConversation(conv, nextOutputName, "i-yes")
-	assert.Equal(t, "weather-report", nextOutputName)
+	outputName = continueConversation(conv, outputName, "i-yes")
+	assert.Equal(t, "weather-report", outputName)
 
-	nextOutputName = continueConversation(conv, nextOutputName, "")
-	assert.Equal(t, "clarification", nextOutputName)
+	outputName = continueConversation(conv, outputName, "")
+	assert.Equal(t, "clarification", outputName)
 
-	nextOutputName = continueConversation(conv, "welcome", "i-no")
-	assert.Equal(t, "bye", nextOutputName)
+	outputName = continueConversation(conv, "welcome", "i-no")
+	assert.Equal(t, "bye", outputName)
+}
+
+func TestContinueFallback(t *testing.T) {
+	conv, outputName := startConversation("../test_data/fallbacks.yml", "i-any")
+	assert.Equal(t, "a", outputName)
+
+	assert.Equal(t, "b", continueConversation(conv, outputName, "i-yes"))
+	assert.Equal(t, "c", continueConversation(conv, outputName, "i-no"))
+	assert.Equal(t, "b", continueConversation(conv, outputName, "i-unknown"))
+
+	assert.Equal(t, "d", continueConversation(conv, "b", "i-unknown"))
 }
 
 func TestContinue_EmptySequence(t *testing.T) {
@@ -43,12 +54,12 @@ func TestContinue_EmptySequenceWithFallback(t *testing.T) {
 
 func startConversation(path, trigger string) (core.IConversation, string) {
 	conv, _ := createConversation(path)
-	nextOutputName := conv.Continue(core.BlankOutput, &fakeInput{name: trigger})
+	nextOutputName := conv.Continue(core.BlankOutput, core.NewNullInput(trigger))
 	return conv, nextOutputName
 }
 
 func newFakeInput(name string) core.IInput {
-	return &fakeInput{name: name}
+	return core.NewNullInput(name)
 }
 
 func newFakeOutput(name string) core.IOutput {
