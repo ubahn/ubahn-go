@@ -1,6 +1,6 @@
 package core
 
-// IConversation defines a conversation that can be continued.
+// IConversation describes a conversation that can be continued.
 type IConversation interface {
 	// Continue finds the next output to the given previous output and input.
 	Continue(prevOutput IOutput, input IInput) string
@@ -9,16 +9,16 @@ type IConversation interface {
 	Empty() bool
 }
 
-// emptyConversation is a null object which implements empty IConversation.
-type emptyConversation struct {
+type nullConversation struct {
 }
 
-func (conv *emptyConversation) Continue(prevOutput IOutput, input IInput) string {
+func (conv *nullConversation) Continue(prevOutput IOutput, input IInput) string {
 	return BlankOutputName
 }
 
-func (conv *emptyConversation) Empty() bool {
+func (conv *nullConversation) Empty() bool {
 	return true
 }
 
-var NullConversation = &emptyConversation{}
+// NullConversation is a null object that implements IConversation interface.
+var NullConversation = &nullConversation{}

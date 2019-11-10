@@ -8,14 +8,6 @@ import (
 	core "github.com/ubahn/ubahn-go/core"
 )
 
-type fakeInput struct {
-	name string
-}
-
-func (in *fakeInput) Name() string {
-	return in.name
-}
-
 func TestNewConversation(t *testing.T) {
 	conv, err := createConversation("../test_data/weather.yml")
 

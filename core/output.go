@@ -1,6 +1,6 @@
 package core
 
-// IOutput defines an output which can be sent to those in a conversation,
+// IOutput describes an output that can be sent to those in a conversation,
 // who provided input (e.g. a chatbot sends an output to a user).
 type IOutput interface {
 	// Name returns output's name.
@@ -22,7 +22,7 @@ type nullOutput struct {
 	name string
 }
 
-// NewNullOutput creates a null object output.
+// NewNullOutput creates a null object that implements IOutput.
 func NewNullOutput(name string) IOutput {
 	return &nullOutput{name: name}
 }
