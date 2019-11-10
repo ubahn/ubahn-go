@@ -9,6 +9,14 @@ See the [whitepaper](https://github.com/ubahn/whitepaper) for generic informatio
 [![Go Report Card](https://goreportcard.com/badge/github.com/ubahn/ubahn-go)](https://goreportcard.com/report/github.com/ubahn/ubahn-go)
 [![GoDoc](https://godoc.org/github.com/ubahn/ubahn-go?status.svg)](https://godoc.org/github.com/ubahn/ubahn-go)
 
+## Installation and usage
+
+The import path for the package is *gopkg.in/ubahn/ubahn-go.v1*.
+
+To install it, run:
+
+    go get gopkg.in/ubahn/ubahn-go.v1
+
 ## Example
 
 Conversation definition in `weather-report.yml`:
