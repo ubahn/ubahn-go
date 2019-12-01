@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNullOutput(t *testing.T) {
+func Test_NullOutput(t *testing.T) {
 	name := fake.Model()
 	output := NewNullOutput(name)
 
@@ -18,7 +18,7 @@ func TestNullOutput(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestBlankOutput(t *testing.T) {
+func Test_BlankOutput(t *testing.T) {
 	assert.NotNil(t, BlankOutput)
 	assert.NotEmpty(t, BlankOutput.Name())
 }

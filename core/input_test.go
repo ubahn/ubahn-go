@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNullInput(t *testing.T) {
+func Test_NullInput(t *testing.T) {
 	name := fake.Model()
 	input := NewNullInput(name)
 

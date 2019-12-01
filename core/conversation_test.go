@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNullConversationContinue(t *testing.T) {
+func Test_NullConversation_Continue(t *testing.T) {
 	input := NewNullInput("abc")
 	prevOutput := BlankOutput
 	nextOutputName := NullConversation.Continue(prevOutput, input)
@@ -14,6 +14,6 @@ func TestNullConversationContinue(t *testing.T) {
 	assert.Equal(t, BlankOutputName, nextOutputName)
 }
 
-func TestNullConversationEmpty(t *testing.T) {
+func Test_NullConversation_Empty(t *testing.T) {
 	assert.True(t, NullConversation.Empty())
 }

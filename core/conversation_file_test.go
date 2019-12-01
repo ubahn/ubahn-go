@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewConversationFile(t *testing.T) {
+func Test_NewConversationFile(t *testing.T) {
 	file, err := NewConversationFile("../test_data/weather.yml")
 
 	assert.False(t, file.Empty)
@@ -15,21 +15,21 @@ func TestNewConversationFile(t *testing.T) {
 	assert.Equal(t, 1, file.Version)
 }
 
-func TestNewConversationFile_InvalidFile(t *testing.T) {
+func Test_NewConversationFile_InvalidFile(t *testing.T) {
 	file, err := NewConversationFile("../test_data/invalid.yml")
 
 	assert.True(t, file.Empty)
 	assert.NotNil(t, err)
 }
 
-func TestNewConversationFile_WhenFileDoesNotExist(t *testing.T) {
+func Test_NewConversationFile_WhenFileDoesNotExist(t *testing.T) {
 	file, err := NewConversationFile("")
 
 	assert.True(t, file.Empty)
 	assert.NotNil(t, err)
 }
 
-func TestNewConversationFile_Version(t *testing.T) {
+func Test_NewConversationFile_Version(t *testing.T) {
 	file, _ := NewConversationFile("../test_data/v1.yml")
 
 	assert.Equal(t, 1, file.Version)
@@ -39,7 +39,7 @@ func TestNewConversationFile_Version(t *testing.T) {
 	assert.Equal(t, 2, file.Version)
 }
 
-func TestParse(t *testing.T) {
+func Test_Parse(t *testing.T) {
 	file, _ := NewConversationFile("../test_data/weather.yml")
 	var hash map[string]interface{}
 	err := file.Parse(&hash)

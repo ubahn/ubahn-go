@@ -8,14 +8,14 @@ import (
 	core "github.com/ubahn/ubahn-go/core"
 )
 
-func TestNewConversation(t *testing.T) {
+func Test_NewConversation(t *testing.T) {
 	conv, err := createConversation("../test_data/weather.yml")
 
 	assert.False(t, conv.Empty())
 	assert.Nil(t, err)
 }
 
-func TestContinue(t *testing.T) {
+func Test_Continue(t *testing.T) {
 	conv, outputName := startConversation("../test_data/weather.yml", "i-user-welcome")
 	assert.Equal(t, "welcome", outputName)
 
@@ -29,7 +29,7 @@ func TestContinue(t *testing.T) {
 	assert.Equal(t, "bye", outputName)
 }
 
-func TestContinueFallback(t *testing.T) {
+func Test_Continue_Fallback(t *testing.T) {
 	conv, outputName := startConversation("../test_data/fallbacks.yml", "i-any")
 	assert.Equal(t, "a", outputName)
 
@@ -40,13 +40,26 @@ func TestContinueFallback(t *testing.T) {
 	assert.Equal(t, "d", continueConversation(conv, "b", "i-unknown"))
 }
 
-func TestContinue_EmptySequence(t *testing.T) {
+func Test_Continue_OutOfSequence(t *testing.T) {
+	conv, outputName := startConversation("../test_data/out_of_sequence.yml", "i-any")
+	assert.Equal(t, "step1", outputName)
+
+	assert.Equal(t, "step2", continueConversation(conv, outputName, "i-yes"))
+	assert.Equal(t, "end", continueConversation(conv, outputName, "i-no"))
+	assert.Equal(t, "unexpected1", continueConversation(conv, outputName, "i-unknown"))
+
+	assert.Equal(t, "step2", continueConversation(conv, "unexpected1", "i-yes"))
+	assert.Equal(t, "end", continueConversation(conv, "unexpected1", "i-no"))
+	assert.Equal(t, "unexpected2", continueConversation(conv, "unexpected1", "i-blahblah"))
+}
+
+func Test_Continue_EmptySequence(t *testing.T) {
 	_, nextOutputName := startConversation("../test_data/weather_empty.yml", "i-user-welcome")
 
 	assert.Equal(t, core.BlankOutputName, nextOutputName)
 }
 
-func TestContinue_EmptySequenceWithFallback(t *testing.T) {
+func Test_Continue_EmptySequenceWithFallback(t *testing.T) {
 	_, nextOutputName := startConversation("../test_data/weather_empty_fallback.yml", "i-user-welcome")
 
 	assert.Equal(t, "clarification", nextOutputName)

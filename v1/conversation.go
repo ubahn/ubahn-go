@@ -77,12 +77,8 @@ func (conv *Conversation) fallback() string {
 }
 
 func (conv *Conversation) findPrevOutputConfig(prevOutput core.IOutput) configOutput {
-	sequence := conv.config.Sequence
-	for i := 0; i < len(sequence); i++ {
-		outputName := sequence[i]
-		if prevOutput.Name() == outputName {
-			return conv.config.Outputs[outputName]
-		}
+	if output, ok := conv.config.Outputs[prevOutput.Name()]; ok {
+		return output
 	}
 	return configOutput{empty: true}
 }
