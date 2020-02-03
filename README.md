@@ -1,6 +1,6 @@
 # Ubahn for Golang
 
-Golang implementation of the conversation structuring framework Ubahn.
+Golang implementation of the dialog management framework Ubahn.
 See the [whitepaper](https://github.com/ubahn/whitepaper) for generic information on Ubahn.
 
 [![Build Status](https://travis-ci.org/ubahn/ubahn-go.svg?branch=master)](https://travis-ci.org/ubahn/ubahn-go)
