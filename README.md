@@ -11,9 +11,7 @@ See the [whitepaper](https://github.com/ubahn/whitepaper) for generic informatio
 
 ## Installation and usage
 
-The import path for the package is *gopkg.in/ubahn/ubahn-go.v1*.
-
-To install it, run:
+To install the package run:
 
     go get github.com/ubahn/ubahn-go
 
@@ -80,3 +78,9 @@ Here’s a checklist of what you should implement on your app’s side in order 
 * Something that produces instances of ubahn.IInput based on user input (like a factory).
 * Specific output factory that implements ubahn.IOutputFactory.
 * Specific outputs that implement ubahn.IOutput.
+
+## Current focus and priorities
+
+* Ubahn 2.0
+* Contribution guidelines
+* Documentation improvement
