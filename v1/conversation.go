@@ -29,7 +29,8 @@ func (conv *Conversation) Continue(prevOutput core.IOutput, input core.IInput) s
 	return conv.matchOutput(prevOutput, input)
 }
 
-// Empty returnes
+// Empty returns true when the conversation is not initialized.
+// This implementation is considered to be always initialized.
 func (conv *Conversation) Empty() bool {
 	return false
 }
@@ -73,7 +74,7 @@ func (conv *Conversation) fallback() string {
 	if len(fallback) > 0 {
 		return fallback
 	}
-	return core.BlankOutputName
+	return core.NotFoundOutputName
 }
 
 func (conv *Conversation) findPrevOutputConfig(prevOutput core.IOutput) configOutput {

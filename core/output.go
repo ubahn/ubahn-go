@@ -10,9 +10,13 @@ type IOutput interface {
 	Send() (interface{}, error)
 }
 
-// BlankOutputName is a predefined constant name of a blank output, which acts as a null-object
+// BlankOutputName is a predefined constant name of a blank output that acts as a null-object
 // in cases when output can't be returned.
 const BlankOutputName string = "ubahn-blank-output"
+
+// NotFoundOutputName is a predefined constant name of an output that indicates that no appropriate
+// output was found.
+const NotFoundOutputName string = "ubahn-not-found"
 
 // NextOutputName is a predefined constant name which acts as a keyword, identifying the next
 // output in the sequence.
@@ -29,6 +33,9 @@ func NewNullOutput(name string) IOutput {
 
 // BlankOutput is a null object of output.
 var BlankOutput = NewNullOutput(BlankOutputName)
+
+// NotFoundOutput is a null object of not found output.
+var NotFoundOutput = NewNullOutput(NotFoundOutputName)
 
 func (out *nullOutput) Name() string {
 	return out.name

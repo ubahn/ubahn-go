@@ -12,10 +12,12 @@ type IConversation interface {
 type nullConversation struct {
 }
 
+// Continue of the null conversation object returns blank output name.
 func (conv *nullConversation) Continue(prevOutput IOutput, input IInput) string {
 	return BlankOutputName
 }
 
+// Empty of the null conversatino object returns true.
 func (conv *nullConversation) Empty() bool {
 	return true
 }
