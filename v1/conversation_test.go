@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,14 +10,14 @@ import (
 )
 
 func Test_NewConversation(t *testing.T) {
-	conv, err := createConversation("../test_data/weather.yml")
+	conv, err := createConversation("weather.yml")
 
 	assert.False(t, conv.Empty())
 	assert.Nil(t, err)
 }
 
 func Test_Continue(t *testing.T) {
-	conv, outputName := startConversation("../test_data/weather.yml", "i-user-welcome")
+	conv, outputName := startConversation("weather.yml", "i-user-welcome")
 	assert.Equal(t, "welcome", outputName)
 
 	outputName = continueConversation(conv, outputName, "i-yes")
@@ -30,7 +31,7 @@ func Test_Continue(t *testing.T) {
 }
 
 func Test_Continue_Fallback(t *testing.T) {
-	conv, outputName := startConversation("../test_data/fallbacks.yml", "i-any")
+	conv, outputName := startConversation("fallbacks.yml", "i-any")
 	assert.Equal(t, "a", outputName)
 
 	assert.Equal(t, "b", continueConversation(conv, outputName, "i-yes"))
@@ -41,7 +42,7 @@ func Test_Continue_Fallback(t *testing.T) {
 }
 
 func Test_Continue_OutOfSequence(t *testing.T) {
-	conv, outputName := startConversation("../test_data/out_of_sequence.yml", "i-any")
+	conv, outputName := startConversation("out_of_sequence.yml", "i-any")
 	assert.Equal(t, "step1", outputName)
 
 	assert.Equal(t, "step2", continueConversation(conv, outputName, "i-yes"))
@@ -54,19 +55,30 @@ func Test_Continue_OutOfSequence(t *testing.T) {
 }
 
 func Test_Continue_EmptySequence(t *testing.T) {
-	_, nextOutputName := startConversation("../test_data/weather_empty.yml", "i-user-welcome")
+	_, nextOutputName := startConversation("weather_empty.yml", "i-user-welcome")
 
-	assert.Equal(t, core.BlankOutputName, nextOutputName)
+	assert.Equal(t, core.NotFoundOutputName, nextOutputName)
 }
 
 func Test_Continue_EmptySequenceWithFallback(t *testing.T) {
-	_, nextOutputName := startConversation("../test_data/weather_empty_fallback.yml", "i-user-welcome")
+	_, nextOutputName := startConversation("weather_empty_fallback.yml", "i-user-welcome")
 
 	assert.Equal(t, "clarification", nextOutputName)
 }
 
-func startConversation(path, trigger string) (core.IConversation, string) {
-	conv, _ := createConversation(path)
+func Test_Continue_NotFound(t *testing.T) {
+	conv, outputName := startConversation("no_fallback.yml", "i-any")
+
+	assert.Equal(t, "a", outputName)
+
+	assert.Equal(t, "b", continueConversation(conv, outputName, "i-yes"))
+	assert.Equal(t, core.NotFoundOutputName, continueConversation(conv, "b", "i-yes"))
+
+	assert.Equal(t, core.NotFoundOutputName, continueConversation(conv, outputName, "i-blah-blah"))
+}
+
+func startConversation(testFileName, trigger string) (core.IConversation, string) {
+	conv, _ := createConversation(testFileName)
 	nextOutputName := conv.Continue(core.BlankOutput, core.NewNullInput(trigger))
 	return conv, nextOutputName
 }
@@ -83,7 +95,8 @@ func continueConversation(conv core.IConversation, prevOutput, input string) str
 	return conv.Continue(newFakeOutput(prevOutput), newFakeInput(input))
 }
 
-func createConversation(path string) (core.IConversation, error) {
+func createConversation(testFileName string) (core.IConversation, error) {
+	path := fmt.Sprintf("../test_data/v1/%s", testFileName)
 	file, err := core.NewConversationFile(path)
 	if err != nil {
 		panic(err)

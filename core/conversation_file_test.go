@@ -1,13 +1,14 @@
 package core
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_NewConversationFile(t *testing.T) {
-	file, err := NewConversationFile("../test_data/weather.yml")
+	file, err := newTestConversationFile("v1", "weather.yml")
 
 	assert.False(t, file.Empty)
 	assert.Nil(t, err)
@@ -16,31 +17,31 @@ func Test_NewConversationFile(t *testing.T) {
 }
 
 func Test_NewConversationFile_InvalidFile(t *testing.T) {
-	file, err := NewConversationFile("../test_data/invalid.yml")
+	file, err := newTestConversationFile("v1", "invalid.yml")
 
 	assert.True(t, file.Empty)
 	assert.NotNil(t, err)
 }
 
 func Test_NewConversationFile_WhenFileDoesNotExist(t *testing.T) {
-	file, err := NewConversationFile("")
+	file, err := newTestConversationFile("v1", "")
 
 	assert.True(t, file.Empty)
 	assert.NotNil(t, err)
 }
 
 func Test_NewConversationFile_Version(t *testing.T) {
-	file, _ := NewConversationFile("../test_data/v1.yml")
+	file, _ := newTestConversationFile("v1", "v1.yml")
 
 	assert.Equal(t, 1, file.Version)
 
-	file, _ = NewConversationFile("../test_data/v2.yml")
+	file, _ = newTestConversationFile("v1", "v2.yml")
 
 	assert.Equal(t, 2, file.Version)
 }
 
 func Test_Parse(t *testing.T) {
-	file, _ := NewConversationFile("../test_data/weather.yml")
+	file, _ := newTestConversationFile("v1", "weather.yml")
 	var hash map[string]interface{}
 	err := file.Parse(&hash)
 
@@ -50,4 +51,9 @@ func Test_Parse(t *testing.T) {
 	assert.Equal(t, 2, len(sequence))
 	assert.Equal(t, "welcome", sequence[0].(string))
 	assert.Equal(t, "weather-report", sequence[1].(string))
+}
+
+func newTestConversationFile(version, fileName string) (*ConversationFile, error) {
+	return NewConversationFile(
+		fmt.Sprintf("../test_data/%s/%s", version, fileName))
 }
