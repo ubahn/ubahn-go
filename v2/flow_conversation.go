@@ -1,19 +1,19 @@
-package v1
+package v2
 
 import (
 	core "github.com/ubahn/ubahn-go/core"
 )
 
-// Conversation is the default implementation of IConversation.
+// FlowConversation is the implementation of IConversation, specific to a flow.
 // It's continued based on the sequence, defined in the give YAML file.
-type Conversation struct {
-	config        conversationConfig
+type FlowConversation struct {
+	config        flowConfig
 	outputFactory core.IOutputFactory
 }
 
-// NewConversation creates a new instance of a conversation.
-func NewConversation(file core.IConversationFile, outputFactory core.IOutputFactory) (core.IConversation, error) {
-	conv := &Conversation{outputFactory: outputFactory}
+// NewFlowConversation creates a new instance of a flow conversation.
+func NewFlowConversation(file core.IConversationFile, outputFactory core.IOutputFactory) (core.IConversation, error) {
+	conv := &FlowConversation{outputFactory: outputFactory}
 	err := file.Parse(&conv.config)
 	if err != nil {
 		return core.NullConversation, err
@@ -23,7 +23,7 @@ func NewConversation(file core.IConversationFile, outputFactory core.IOutputFact
 
 // Continue finds the next output to the given previous output and input.
 // If no suitable output found, it returns blank output.
-func (conv *Conversation) Continue(prevOutput core.IOutput, input core.IInput) core.IOutput {
+func (conv *FlowConversation) Continue(prevOutput core.IOutput, input core.IInput) core.IOutput {
 	var nextOutputName string
 	if prevOutput.Name() == core.BlankOutputName && conv.inTriggers(input) {
 		nextOutputName = conv.firstOutputName()
@@ -35,11 +35,11 @@ func (conv *Conversation) Continue(prevOutput core.IOutput, input core.IInput) c
 
 // Empty returns true when the conversation is not initialized.
 // This implementation is considered to be always initialized.
-func (conv *Conversation) Empty() bool {
+func (conv *FlowConversation) Empty() bool {
 	return false
 }
 
-func (conv *Conversation) inTriggers(input core.IInput) bool {
+func (conv *FlowConversation) inTriggers(input core.IInput) bool {
 	triggers := conv.config.Triggers
 	for i := 0; i < len(triggers); i++ {
 		trigger := triggers[i]
@@ -50,7 +50,7 @@ func (conv *Conversation) inTriggers(input core.IInput) bool {
 	return false
 }
 
-func (conv *Conversation) firstOutputName() string {
+func (conv *FlowConversation) firstOutputName() string {
 	sequence := conv.config.Sequence
 	if len(sequence) > 0 {
 		return sequence[0]
@@ -58,7 +58,7 @@ func (conv *Conversation) firstOutputName() string {
 	return conv.fallback()
 }
 
-func (conv *Conversation) matchOutput(prevOutput core.IOutput, input core.IInput) string {
+func (conv *FlowConversation) matchOutput(prevOutput core.IOutput, input core.IInput) string {
 	prevOutputConfig := conv.findPrevOutputConfig(prevOutput)
 	if prevOutputConfig.empty {
 		return conv.resolveOutputName(conv.fallback(), prevOutput.Name())
@@ -73,7 +73,7 @@ func (conv *Conversation) matchOutput(prevOutput core.IOutput, input core.IInput
 	return conv.resolveOutputName(output, prevOutput.Name())
 }
 
-func (conv *Conversation) fallback() string {
+func (conv *FlowConversation) fallback() string {
 	fallback := conv.config.Fallback
 	if len(fallback) > 0 {
 		return fallback
@@ -81,14 +81,14 @@ func (conv *Conversation) fallback() string {
 	return core.NotFoundOutputName
 }
 
-func (conv *Conversation) findPrevOutputConfig(prevOutput core.IOutput) configOutput {
+func (conv *FlowConversation) findPrevOutputConfig(prevOutput core.IOutput) flowOutput {
 	if output, ok := conv.config.Outputs[prevOutput.Name()]; ok {
 		return output
 	}
-	return configOutput{empty: true}
+	return flowOutput{empty: true}
 }
 
-func (conv *Conversation) findNextOutput(prevOutputName string) string {
+func (conv *FlowConversation) findNextOutput(prevOutputName string) string {
 	sequence := conv.config.Sequence
 	for i := 0; i < len(sequence)-1; i++ {
 		output := sequence[i]
@@ -99,7 +99,7 @@ func (conv *Conversation) findNextOutput(prevOutputName string) string {
 	return conv.fallback()
 }
 
-func (conv *Conversation) resolveOutputName(outputName, prevOutputName string) string {
+func (conv *FlowConversation) resolveOutputName(outputName, prevOutputName string) string {
 	if outputName == core.NextOutputName {
 		return conv.findNextOutput(prevOutputName)
 	}

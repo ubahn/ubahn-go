@@ -79,7 +79,7 @@ func Test_Continue_NotFound(t *testing.T) {
 
 func startConversation(testFileName, trigger string) (core.IConversation, string) {
 	conv, _ := createConversation(testFileName)
-	nextOutputName := conv.Continue(core.BlankOutput, core.NewNullInput(trigger))
+	nextOutputName := conv.Continue(core.BlankOutput, core.NewNullInput(trigger)).Name()
 	return conv, nextOutputName
 }
 
@@ -92,7 +92,7 @@ func newFakeOutput(name string) core.IOutput {
 }
 
 func continueConversation(conv core.IConversation, prevOutput, input string) string {
-	return conv.Continue(newFakeOutput(prevOutput), newFakeInput(input))
+	return conv.Continue(newFakeOutput(prevOutput), newFakeInput(input)).Name()
 }
 
 func createConversation(testFileName string) (core.IConversation, error) {
@@ -101,5 +101,5 @@ func createConversation(testFileName string) (core.IConversation, error) {
 	if err != nil {
 		panic(err)
 	}
-	return NewConversation(file)
+	return NewConversation(file, core.NewNullOutputFactory())
 }

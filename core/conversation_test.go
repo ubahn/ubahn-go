@@ -9,9 +9,9 @@ import (
 func Test_NullConversation_Continue(t *testing.T) {
 	input := NewNullInput("abc")
 	prevOutput := BlankOutput
-	nextOutputName := NullConversation.Continue(prevOutput, input)
+	nextOutput := NullConversation.Continue(prevOutput, input)
 
-	assert.Equal(t, BlankOutputName, nextOutputName)
+	assert.Equal(t, BlankOutputName, nextOutput.Name())
 }
 
 func Test_NullConversation_Empty(t *testing.T) {

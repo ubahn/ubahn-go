@@ -3,7 +3,7 @@ package core
 import (
 	"io/ioutil"
 
-	"gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v2"
 )
 
 // IConversationFile defines a file that contains conversation configuration.

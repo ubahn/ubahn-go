@@ -22,6 +22,9 @@ const NotFoundOutputName string = "ubahn-not-found"
 // output in the sequence.
 const NextOutputName string = "next"
 
+// NoneOutputName is a predefined constant name which acts as a keyword, identifying no output.
+const NoneOutputName string = "none"
+
 type nullOutput struct {
 	name string
 }

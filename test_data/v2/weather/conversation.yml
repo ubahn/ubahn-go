@@ -1,0 +1,8 @@
+version: 2
+
+defaultTrigger: none
+
+triggers:
+  i-user-welcome: f-default
+  i-city-weather: f-city-weather
+
