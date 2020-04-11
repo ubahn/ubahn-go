@@ -3,6 +3,6 @@ version: 2
 defaultTrigger: none
 
 triggers:
-  i-user-welcome: f-default
-  i-city-weather: f-city-weather
+  i-user-says-welcome: f-default
+  i-asks-city-weather: f-city-weather
 
