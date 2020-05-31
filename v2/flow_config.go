@@ -7,8 +7,7 @@ type flowOutput struct {
 }
 
 type flowConfig struct {
-	Sequence []string              `yaml:"sequence"`
-	Triggers []string              `yaml:"triggers"`
-	Fallback string                `yaml:"fallback"`
-	Outputs  map[string]flowOutput `yaml:"outputs"`
+	Fallback   string                `yaml:"fallback"`
+	RootOutput string                `yaml:"rootOutput"`
+	Outputs    map[string]flowOutput `yaml:"outputs"`
 }

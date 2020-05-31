@@ -10,10 +10,36 @@ import (
 )
 
 func Test_NewConversation(t *testing.T) {
-	conv, err := createConversation("weather")
+	assertConversationCreated(t, "weather")
+}
+
+func Test_NewConversation_Empty(t *testing.T) {
+	assertConversationCreated(t, "empty")
+}
+
+func Test_NewConversation_WeirdYaml(t *testing.T) {
+	assertConversationCreated(t, "weird")
+}
+
+func Test_Continue_Triggers(t *testing.T) {
+	conv, _ := createConversation("weather")
+
+	nextOut, nextConv := continueConversation(conv, core.BlankOutputName, "i-user-says-welcome")
+	assert.Equal(t, "welcome", nextOut)
+
+	flowConv, ok := nextConv.(*FlowConversation)
+	assert.True(t, ok)
+	assert.NotNil(t, flowConv)
+	assert.Equal(t, "city-weather", flowConv.FlowName())
+}
+
+func assertConversationCreated(t *testing.T, convName string) core.IConversation {
+	conv, err := createConversation("empty")
 
 	assert.False(t, conv.Empty())
 	assert.Nil(t, err)
+
+	return conv
 }
 
 func createConversation(convName string) (core.IConversation, error) {

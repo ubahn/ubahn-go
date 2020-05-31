@@ -23,14 +23,14 @@ func NewConversation(file core.IConversationFile, outputFactory core.IOutputFact
 
 // Continue finds the next output to the given previous output and input.
 // If no suitable output found, it returns blank output.
-func (conv *Conversation) Continue(prevOutput core.IOutput, input core.IInput) core.IOutput {
+func (conv *Conversation) Continue(prevOutput core.IOutput, input core.IInput) (core.IOutput, core.IConversation) {
 	var nextOutputName string
 	if prevOutput.Name() == core.BlankOutputName && conv.inTriggers(input) {
 		nextOutputName = conv.firstOutputName()
 	} else {
 		nextOutputName = conv.matchOutput(prevOutput, input)
 	}
-	return conv.outputFactory.Create(nextOutputName)
+	return conv.outputFactory.Create(nextOutputName), conv
 }
 
 // Empty returns true when the conversation is not initialized.

@@ -9,7 +9,7 @@ import (
 func Test_NullConversation_Continue(t *testing.T) {
 	input := NewNullInput("abc")
 	prevOutput := BlankOutput
-	nextOutput := NullConversation.Continue(prevOutput, input)
+	nextOutput, _ := NullConversation.Continue(prevOutput, input)
 
 	assert.Equal(t, BlankOutputName, nextOutput.Name())
 }

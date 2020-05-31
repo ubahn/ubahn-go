@@ -12,6 +12,7 @@ func newFakeOutput(name string) core.IOutput {
 	return core.NewNullOutput(name)
 }
 
-func continueConversation(conv core.IConversation, prevOutput, input string) string {
-	return conv.Continue(newFakeOutput(prevOutput), newFakeInput(input)).Name()
+func continueConversation(conv core.IConversation, prevOutput, input string) (string, core.IConversation) {
+	nextOutput, nextConv := conv.Continue(newFakeOutput(prevOutput), newFakeInput(input))
+	return nextOutput.Name(), nextConv
 }
