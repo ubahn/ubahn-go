@@ -10,21 +10,6 @@ type IOutput interface {
 	Send() (interface{}, error)
 }
 
-// BlankOutputName is a predefined constant name of a blank output that acts as a null-object
-// in cases when output can't be returned.
-const BlankOutputName string = "ubahn-blank-output"
-
-// NotFoundOutputName is a predefined constant name of an output that indicates that no appropriate
-// output was found.
-const NotFoundOutputName string = "ubahn-not-found"
-
-// NextOutputName is a predefined constant name which acts as a keyword, identifying the next
-// output in the sequence.
-const NextOutputName string = "next"
-
-// NoneOutputName is a predefined constant name which acts as a keyword, identifying no output.
-const NoneOutputName string = "none"
-
 type nullOutput struct {
 	name string
 }

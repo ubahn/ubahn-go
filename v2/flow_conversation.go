@@ -49,7 +49,7 @@ func (conv *FlowConversation) FlowName() string {
 // matchOutput tries to next output name, considering previous output and user input.
 func (conv *FlowConversation) matchOutput(prevOutput core.IOutput, input core.IInput) string {
 	prevOutputConfig := conv.findPrevOutputConfig(prevOutput)
-	if prevOutputConfig.empty {
+	if prevOutputConfig.empty || prevOutputConfig.Exit {
 		// If there was no previous output or we don't know it, we start with root output
 		return conv.resolveRootOutput()
 	}

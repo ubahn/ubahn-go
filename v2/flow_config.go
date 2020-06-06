@@ -3,6 +3,7 @@ package v2
 type flowOutput struct {
 	ExpectedInputs map[string]string `yaml:"expectedInputs"`
 	Fallback       string            `yaml:"fallback"`
+	Exit           bool              `yaml:"exit"`
 	empty          bool
 }
 

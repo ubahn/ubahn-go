@@ -35,10 +35,6 @@ func (conv *Conversation) Continue(prevOutput core.IOutput, input core.IInput) (
 		nextFlowName = conv.config.DefaultTrigger
 	}
 
-	if nextFlowName == core.NoneOutputName {
-		return core.BlankOutput, conv
-	}
-
 	return core.BlankOutput, conv
 }
 
