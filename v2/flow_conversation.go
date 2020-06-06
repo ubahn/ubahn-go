@@ -71,7 +71,8 @@ func (conv *FlowConversation) resolveRootOutput() string {
 	if len(conv.config.RootOutput) > 0 {
 		return conv.config.RootOutput
 	}
-	return conv.fallback()
+
+	return conv.firstOutput()
 }
 
 // fallback returns the main flow fallback if it exists, otherwise returns not found output.
@@ -84,8 +85,21 @@ func (conv *FlowConversation) fallback() string {
 }
 
 func (conv *FlowConversation) findPrevOutputConfig(prevOutput core.IOutput) flowOutput {
-	if output, ok := conv.config.Outputs[prevOutput.Name()]; ok {
-		return output
+	// Note: to have outputs ordered, we use array around maps. Map wouldn't guarantee any order.
+	// This of course changes complexity from O(1) to O(n). If this becomes a problem we can
+	// optimize by introducing a search map map[name]index, so that we can get outputs[index].
+	for _, output := range conv.config.Outputs {
+		if out, ok := output[prevOutput.Name()]; ok {
+			return out
+		}
 	}
 	return flowOutput{empty: true}
+}
+
+func (conv *FlowConversation) firstOutput() string {
+	first := conv.config.Outputs[0]
+	for key := range first {
+		return key
+	}
+	return conv.fallback()
 }

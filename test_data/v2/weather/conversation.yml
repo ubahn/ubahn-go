@@ -5,3 +5,4 @@ defaultTrigger: none
 triggers:
   i-user-says-welcome: f-default
   i-asks-city-weather: f-city-weather
+  i-asks-rootless: f-rootless

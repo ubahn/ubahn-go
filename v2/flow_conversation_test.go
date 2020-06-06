@@ -27,6 +27,13 @@ func Test_FlowConversation_Continue_StartWithRoot(t *testing.T) {
 	assert.Equal(t, "welcome", out.Name())
 }
 
+func Test_FlowConversation_Continue_StartWithoutRoot(t *testing.T) {
+	out, _ := startTestFlowConversation("weather", "rootless.yml", "i-asks-rootless")
+
+	// When root isn't specified, we use the first output.
+	assert.Equal(t, "firstOutput", out.Name())
+}
+
 func Test_FlowConversation_Continue_Fallback(t *testing.T) {
 
 }
