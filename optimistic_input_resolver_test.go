@@ -5,40 +5,39 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	core "github.com/ubahn/ubahn-go/core"
 )
 
 const welcomeInputName = "i-welcome"
 const yesInputName = "i-yes"
 const numInputName = "i-num"
 
-var dummyTextResolver core.IExternalInputResolver = core.NewFakeExternalInputResolver(
-	func(msg string) core.IResolvedInput {
+var dummyTextResolver IExternalInputResolver = NewFakeExternalInputResolver(
+	func(msg string) IResolvedInput {
 		switch msg {
 		case "hi":
-			return core.NewResolvedInput(welcomeInputName, msg)
+			return NewResolvedInput(welcomeInputName, msg)
 		case "yes":
-			return core.NewResolvedInput(yesInputName, msg)
+			return NewResolvedInput(yesInputName, msg)
 		default:
-			return core.UnresolvedInput
+			return UnresolvedInput
 		}
 	})
 
-var dummyNumResolver core.IExternalInputResolver = core.NewFakeExternalInputResolver(
-	func(msg string) core.IResolvedInput {
+var dummyNumResolver IExternalInputResolver = NewFakeExternalInputResolver(
+	func(msg string) IResolvedInput {
 		if ok, _ := regexp.MatchString(`\d+`, msg); ok {
-			return core.NewResolvedInput(numInputName, msg)
+			return NewResolvedInput(numInputName, msg)
 		}
 
-		return core.UnresolvedInput
+		return UnresolvedInput
 	})
 
 func Test_Resolve_WhenEmpty(t *testing.T) {
-	assert.False(t, optimisticResolve([]core.IExternalInputResolver{}, "hi").IsResolved())
+	assert.False(t, optimisticResolve([]IExternalInputResolver{}, "hi").IsResolved())
 }
 
 func Test_Resolve(t *testing.T) {
-	resolvers := []core.IExternalInputResolver{dummyTextResolver, dummyNumResolver}
+	resolvers := []IExternalInputResolver{dummyTextResolver, dummyNumResolver}
 
 	assert.Equal(t, welcomeInputName, optimisticResolve(resolvers, "hi").Name())
 	assert.Equal(t, yesInputName, optimisticResolve(resolvers, "yes").Name())
@@ -49,7 +48,7 @@ func Test_Resolve(t *testing.T) {
 	assert.False(t, unknown.IsResolved())
 }
 
-func optimisticResolve(resolvers []core.IExternalInputResolver, msg string) core.IResolvedInput {
+func optimisticResolve(resolvers []IExternalInputResolver, msg string) IResolvedInput {
 	resolver := NewOptimisticInputResolver(resolvers)
-	return resolver.Resolve(core.NewFakeExternalInputContext(msg))
+	return resolver.Resolve(NewFakeExternalInputContext(msg))
 }

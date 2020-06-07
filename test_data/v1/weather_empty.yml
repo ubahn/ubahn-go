@@ -1,6 +1,0 @@
-version: 1
-
-sequence:
-
-triggers:
-  - i-user-welcome

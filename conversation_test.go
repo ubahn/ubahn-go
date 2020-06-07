@@ -1,0 +1,62 @@
+package ubahn
+
+import (
+	"fmt"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func Test_NullConversation_Continue(t *testing.T) {
+	input := NewNullInput("abc")
+	prevOutput := BlankOutput
+	nextOutput, _ := NullConversation.Continue(prevOutput, input)
+
+	assert.Equal(t, BlankOutputName, nextOutput.Name())
+}
+
+func Test_NullConversation_Empty(t *testing.T) {
+	assert.True(t, NullConversation.Empty())
+}
+
+func Test_NewConversation(t *testing.T) {
+	assertConversationCreated(t, "weather")
+}
+
+func Test_NewConversation_Empty(t *testing.T) {
+	assertConversationCreated(t, "empty")
+}
+
+func Test_NewConversation_WeirdYaml(t *testing.T) {
+	assertConversationCreated(t, "weird")
+}
+
+func Test_Continue_Triggers(t *testing.T) {
+	conv, _ := createConversation("weather")
+
+	nextOut, nextConv := continueConversation(conv, BlankOutputName, "i-user-says-welcome")
+	assert.Equal(t, "welcome", nextOut)
+
+	flowConv, ok := nextConv.(*FlowConversation)
+	assert.True(t, ok)
+	assert.NotNil(t, flowConv)
+	assert.Equal(t, "city-weather", flowConv.FlowName())
+}
+
+func assertConversationCreated(t *testing.T, convName string) IConversation {
+	conv, err := createConversation("empty")
+
+	assert.False(t, conv.Empty())
+	assert.Nil(t, err)
+
+	return conv
+}
+
+func createConversation(convName string) (IConversation, error) {
+	path := fmt.Sprintf("../test_data/v2/%s/conversation.yml", convName)
+	file, err := NewConversationFile(path)
+	if err != nil {
+		panic(err)
+	}
+	return NewConversation(file, NewNullOutputFactory())
+}

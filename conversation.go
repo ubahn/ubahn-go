@@ -1,48 +1,92 @@
 package ubahn
 
-import (
-	"fmt"
+// IConversation describes a conversation that can be continued.
+type IConversation interface {
+	// Continue finds the next output to the given previous output and input.
+	Continue(IConversationContext) IConversationContext
 
-	core "github.com/ubahn/ubahn-go/core"
-	v1 "github.com/ubahn/ubahn-go/v1"
-	v2 "github.com/ubahn/ubahn-go/v2"
-)
+	// Empty returns true when the conversation is not initialized.
+	Empty() bool
 
-// NewConversation creates a new instance of a conversation,
+	// FlowName returns name of the current flow.
+	FlowName() string
+}
+
+type nullConversation struct {
+}
+
+// Continue of the null conversation object returns blank output name.
+func (conv *nullConversation) Continue(ctx IConversationContext) IConversationContext {
+	return ctx.Next(ctx.Input(), BlankOutput, conv)
+}
+
+// Empty of the null conversation object returns true.
+func (conv *nullConversation) Empty() bool {
+	return true
+}
+
+// FlowName of the null conversation object returns empty string.
+func (conv *nullConversation) FlowName() string {
+	return ""
+}
+
+// NullConversation is a null object that implements IConversation interface.
+var NullConversation = &nullConversation{}
+
+// Conversation is the implementation of IConversation and may consist of multiple flows.
+type Conversation struct {
+	config           conversationConfig
+	outputFactory    IOutputFactory
+	flowConversation IConversation
+}
+
+// NewConversation creates a new instance of a conversation.
+func NewConversation(file IConversationFile, outputFactory IOutputFactory) (IConversation, error) {
+	conv := &Conversation{outputFactory: outputFactory}
+	err := file.Parse(&conv.config)
+	if err != nil {
+		return NullConversation, err
+	}
+	return conv, nil
+}
+
+// NewConversationFromPath creates a new instance of a conversation,
 // initialized from the given YAML file.
 // If initialization filed, a null object is returned along with an error.
-func NewConversation(conversationFilePath string, outputFactory core.IOutputFactory) (core.IConversation, error) {
-	file, err := core.NewConversationFile(conversationFilePath)
+func NewConversationFromPath(conversationFilePath string, outputFactory IOutputFactory) (IConversation, error) {
+	file, err := NewConversationFile(conversationFilePath)
 	if err != nil {
-		return core.NullConversation, err
+		return NullConversation, err
 	}
 
-	return newConversation(file, outputFactory)
+	return NewConversation(file, outputFactory)
 }
 
-func newConversation(file *core.ConversationFile, outputFactory core.IOutputFactory) (core.IConversation, error) {
-	switch file.Version {
-	case 1:
-		return newV1Conversation(file, outputFactory)
-	case 2:
-		return newV2Conversation(file, outputFactory)
-	}
-
-	return core.NullConversation, fmt.Errorf("Unsupported conversation file version %d", file.Version)
+func newContinuedConversation(
+	config conversationConfig,
+	flowConversation IConversation,
+	outputFactory IOutputFactory) IConversation {
+	return &Conversation{config: config, outputFactory: outputFactory, flowConversation: flowConversation}
 }
 
-func newV1Conversation(file core.IConversationFile, outputFactory core.IOutputFactory) (core.IConversation, error) {
-	conversation, err := v1.NewConversation(file, outputFactory)
-	if err != nil {
-		return core.NullConversation, err
+// Continue finds the next output to the given previous output and input.
+func (conv *Conversation) Continue(ctx IConversationContext) IConversationContext {
+	nextFlowName := conv.config.Triggers[input.Name()]
+	if len(nextFlowName) == 0 {
+		nextFlowName = conv.config.DefaultTrigger
 	}
-	return conversation, nil
+
+	// TODO
+	return ctx
 }
 
-func newV2Conversation(file core.IConversationFile, outputFactory core.IOutputFactory) (core.IConversation, error) {
-	conversation, err := v2.NewConversation(file, outputFactory)
-	if err != nil {
-		return core.NullConversation, err
-	}
-	return conversation, nil
+// Empty returns true when the conversation is not initialized.
+// This implementation is considered to be always initialized.
+func (conv *Conversation) Empty() bool {
+	return false
+}
+
+// FlowName returns name of the current flow.
+func (conv *Conversation) FlowName() string {
+	return conv.flowConversation.FlowName()
 }
