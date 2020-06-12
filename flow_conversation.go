@@ -28,10 +28,10 @@ func NewFlowConversation(file IConversationFile, outputFactory IOutputFactory) (
 
 // Continue finds the next output to the given previous output and input.
 // If no suitable output found, it returns blank output.
-func (conv *FlowConversation) Continue(ctx IConversationContext) ctx.IConversationContext {
-	nextOutputName := conv.matchOutput(ctx.PrevOutput(), ctx.Input())
+func (conv *FlowConversation) Continue(input IInput, ctx IConversationContext) IConversationContext {
+	nextOutputName := conv.matchOutput(ctx.LastOutput(), input)
 	nextOutput := conv.outputFactory.Create(nextOutputName)
-	return ctx.Next(ctx.Input(), nextOutput, conv)
+	return NewConversationContext(conv, nextOutput)
 }
 
 // Empty returns true when the conversation is not initialized.

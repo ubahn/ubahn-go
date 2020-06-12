@@ -3,7 +3,7 @@ package ubahn
 // IConversation describes a conversation that can be continued.
 type IConversation interface {
 	// Continue finds the next output to the given previous output and input.
-	Continue(IConversationContext) IConversationContext
+	Continue(IInput, IConversationContext) IConversationContext
 
 	// Empty returns true when the conversation is not initialized.
 	Empty() bool
@@ -16,8 +16,8 @@ type nullConversation struct {
 }
 
 // Continue of the null conversation object returns blank output name.
-func (conv *nullConversation) Continue(ctx IConversationContext) IConversationContext {
-	return ctx.Next(ctx.Input(), BlankOutput, conv)
+func (conv *nullConversation) Continue(input IInput, ctx IConversationContext) IConversationContext {
+	return NewConversationContext(conv, BlankOutput)
 }
 
 // Empty of the null conversation object returns true.
@@ -70,7 +70,7 @@ func newContinuedConversation(
 }
 
 // Continue finds the next output to the given previous output and input.
-func (conv *Conversation) Continue(ctx IConversationContext) IConversationContext {
+func (conv *Conversation) Continue(input IInput, ctx IConversationContext) IConversationContext {
 	nextFlowName := conv.config.Triggers[input.Name()]
 	if len(nextFlowName) == 0 {
 		nextFlowName = conv.config.DefaultTrigger

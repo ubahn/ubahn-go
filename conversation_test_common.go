@@ -12,9 +12,9 @@ func newFakeOutput(name string) IOutput {
 	return NewNullOutput(name)
 }
 
-func continueConversation(conv IConversation, prevOutput, input string) (string, IConversation) {
-	nextOutput, nextConv := conv.Continue(newFakeOutput(prevOutput), newFakeInput(input))
-	return nextOutput.Name(), nextConv
+func continueConversation(conv IConversation, prevOutput, input string) IConversationContext {
+	inputContext := NewConversationContext(conv, newFakeOutput(prevOutput))
+	return conv.Continue(newFakeInput(input), inputContext)
 }
 
 func newTestConversationFile(convName, testFileName string) (*ConversationFile, error) {
@@ -27,11 +27,12 @@ func newTestFlowConversation(convName, testFileName string) (IConversation, erro
 	return NewFlowConversation(convFile, NewNullOutputFactory())
 }
 
-func startTestFlowConversation(convName, testFileName, startInput string) (IOutput, IConversation) {
+func startTestFlowConversation(convName, testFileName, startInput string) IConversationContext {
 	conv, _ := newTestFlowConversation(convName, testFileName)
-	return conv.Continue(BlankOutput, NewResolvedInput(startInput, nil))
+	inputContext := NewConversationContext(conv, BlankOutput)
+	return conv.Continue(newFakeInput(startInput), inputContext)
 }
 
-func startTestFlowConversationDefault() (IOutput, IConversation) {
+func startTestFlowConversationDefault() IConversationContext {
 	return startTestFlowConversation("weather", "city-weather.yml", "i-asks-city-weather")
 }

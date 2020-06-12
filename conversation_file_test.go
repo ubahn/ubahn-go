@@ -1,7 +1,6 @@
 package ubahn
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -63,11 +62,6 @@ func Test_FilePath(t *testing.T) {
 	file, _ := newDefaultTestConversationFile()
 
 	assert.Equal(t, "../test_data/v1/"+defaultConversationFileName, file.FilePath())
-}
-
-func newTestConversationFile(version, fileName string) (*ConversationFile, error) {
-	return NewConversationFile(
-		fmt.Sprintf("../test_data/%s/%s", version, fileName))
 }
 
 const defaultConversationFileName = "weather.yml"

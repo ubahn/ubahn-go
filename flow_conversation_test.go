@@ -19,63 +19,63 @@ func Test_NewFlowConversation_InvalidFormat(t *testing.T) {
 }
 
 func Test_FlowConversation_Continue_StartWithRoot(t *testing.T) {
-	out, _ := startTestFlowConversationDefault()
+	ctx := startTestFlowConversationDefault()
 
-	assert.Equal(t, "welcome", out.Name())
+	assert.Equal(t, "welcome", ctx.LastOutput().Name())
 }
 
 func Test_FlowConversation_Continue_StartWithoutRoot(t *testing.T) {
-	out, _ := startTestFlowConversation("weather", "rootless.yml", "i-asks-rootless")
+	ctx := startTestFlowConversation("weather", "rootless.yml", "i-asks-rootless")
 
 	// When root isn't specified, we use the first output.
-	assert.Equal(t, "firstOutput", out.Name())
+	assert.Equal(t, "firstOutput", ctx.LastOutput().Name())
 }
 
 func Test_FlowConversation_Continue_ExpectedInput(t *testing.T) {
-	prevOut, conv := startTestFlowConversationDefault()
+	ctx := startTestFlowConversationDefault()
 
-	out, conv := conv.Continue(prevOut, newFakeInput("i-yes"))
-	assert.Equal(t, "weather-report", out.Name())
+	ctx = ctx.Conversation().Continue(newFakeInput("i-yes"), ctx)
+	assert.Equal(t, "weather-report", ctx.LastOutput().Name())
 
-	out, conv = conv.Continue(prevOut, newFakeInput("i-no"))
-	assert.Equal(t, "bye", out.Name())
+	ctx = ctx.Conversation().Continue(newFakeInput("i-no"), ctx)
+	assert.Equal(t, "bye", ctx.LastOutput().Name())
 }
 
 func Test_FlowConversation_Continue_LocalFallback(t *testing.T) {
-	prevOut, conv := startTestFlowConversationDefault()
+	ctx := startTestFlowConversationDefault()
 
-	out, conv := conv.Continue(prevOut, newFakeInput("i-blah"))
+	ctx = ctx.Conversation().Continue(newFakeInput("i-blah"), ctx)
 
-	assert.Equal(t, "welcome-clarification", out.Name())
+	assert.Equal(t, "welcome-clarification", ctx.LastOutput().Name())
 }
 
 func Test_FlowConversation_Continue_LastOutputFallback(t *testing.T) {
-	prevOut, conv := startTestFlowConversationDefault()
+	ctx := startTestFlowConversationDefault()
 
-	prevOut, conv = conv.Continue(prevOut, newFakeInput("i-yes"))
-	out, conv := conv.Continue(prevOut, newFakeInput("i-blah"))
+	ctx = ctx.Conversation().Continue(newFakeInput("i-yes"), ctx)
+	ctx = ctx.Conversation().Continue(newFakeInput("i-blah"), ctx)
 
-	assert.Equal(t, BlankOutputName, out.Name())
+	assert.Equal(t, BlankOutputName, ctx.LastOutput().Name())
 }
 
 func Test_FlowConversation_Continue_Exit(t *testing.T) {
-	prevOut, conv := startTestFlowConversationDefault()
+	ctx := startTestFlowConversationDefault()
 
-	prevOut, conv = conv.Continue(prevOut, newFakeInput("i-no"))
-	assert.Equal(t, "bye", prevOut.Name())
+	ctx = ctx.Conversation().Continue(newFakeInput("i-no"), ctx)
+	assert.Equal(t, "bye", ctx.LastOutput().Name())
 
-	out, conv := conv.Continue(prevOut, newFakeInput("i-asks-city-weather"))
-	assert.Equal(t, "welcome", out.Name())
+	ctx = ctx.Conversation().Continue(newFakeInput("i-asks-city-weather"), ctx)
+	assert.Equal(t, "welcome", ctx.LastOutput().Name())
 }
 
 func Test_FlowConversation_Continue_GlobalFallback(t *testing.T) {
-	prevOut, conv := startTestFlowConversationDefault()
+	ctx := startTestFlowConversationDefault()
 
-	prevOut, conv = conv.Continue(prevOut, newFakeInput("i-maybe"))
-	assert.Equal(t, "info", prevOut.Name())
+	ctx = ctx.Conversation().Continue(newFakeInput("i-maybe"), ctx)
+	assert.Equal(t, "info", ctx.LastOutput().Name())
 
-	out, conv := conv.Continue(prevOut, newFakeInput("i-blah"))
-	assert.Equal(t, "clarification", out.Name())
+	ctx = ctx.Conversation().Continue(newFakeInput("i-blah"), ctx)
+	assert.Equal(t, "clarification", ctx.LastOutput().Name())
 }
 
 func assertInitializedFlowConversation(t *testing.T, convName, testFileName string) {

@@ -8,11 +8,10 @@ import (
 )
 
 func Test_NullConversation_Continue(t *testing.T) {
-	input := NewNullInput("abc")
-	prevOutput := BlankOutput
-	nextOutput, _ := NullConversation.Continue(prevOutput, input)
+	ctx := NewEmptyConversationContext(NullConversation)
+	ctx = NullConversation.Continue(newFakeInput("fake"), ctx)
 
-	assert.Equal(t, BlankOutputName, nextOutput.Name())
+	assert.Equal(t, BlankOutputName, ctx.LastOutput().Name())
 }
 
 func Test_NullConversation_Empty(t *testing.T) {
@@ -34,10 +33,10 @@ func Test_NewConversation_WeirdYaml(t *testing.T) {
 func Test_Continue_Triggers(t *testing.T) {
 	conv, _ := createConversation("weather")
 
-	nextOut, nextConv := continueConversation(conv, BlankOutputName, "i-user-says-welcome")
-	assert.Equal(t, "welcome", nextOut)
+	ctx := continueConversation(conv, BlankOutputName, "i-user-says-welcome")
+	assert.Equal(t, "welcome", ctx.LastOutput().Name())
 
-	flowConv, ok := nextConv.(*FlowConversation)
+	flowConv, ok := ctx.Conversation().(*FlowConversation)
 	assert.True(t, ok)
 	assert.NotNil(t, flowConv)
 	assert.Equal(t, "city-weather", flowConv.FlowName())
@@ -53,7 +52,7 @@ func assertConversationCreated(t *testing.T, convName string) IConversation {
 }
 
 func createConversation(convName string) (IConversation, error) {
-	path := fmt.Sprintf("../test_data/v2/%s/conversation.yml", convName)
+	path := fmt.Sprintf("./test_data/%s/conversation.yml", convName)
 	file, err := NewConversationFile(path)
 	if err != nil {
 		panic(err)
