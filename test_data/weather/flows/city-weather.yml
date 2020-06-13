@@ -1,0 +1,17 @@
+version: 2
+
+rootOutput: welcome
+fallback: clarification
+
+outputs:
+  - welcome:
+      expectedInputs:
+        i-yes: weather-report
+        i-maybe: info
+        i-no: bye
+      fallback: welcome-clarification
+  - info:
+  - bye:
+      exit: true
+  - weather-report:
+      fallback: :blank
