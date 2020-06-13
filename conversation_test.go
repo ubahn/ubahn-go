@@ -33,7 +33,7 @@ func Test_NewConversation_WeirdYaml(t *testing.T) {
 func Test_Continue_Triggers(t *testing.T) {
 	conv, _ := createConversation("weather")
 
-	ctx := continueConversation(conv, BlankOutputName, "i-user-says-welcome")
+	ctx := continueConversation(conv, BlankOutputName, "i-asks-city-weather")
 	assert.Equal(t, "welcome", ctx.LastOutput().Name())
 
 	flowConv, ok := ctx.Conversation().(*FlowConversation)

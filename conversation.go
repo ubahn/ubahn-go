@@ -1,5 +1,10 @@
 package ubahn
 
+import (
+	"path"
+	"path/filepath"
+)
+
 // IConversation describes a conversation that can be continued.
 type IConversation interface {
 	// Continue finds the next output to the given previous output and input.
@@ -35,14 +40,14 @@ var NullConversation = &nullConversation{}
 
 // Conversation is the implementation of IConversation and may consist of multiple flows.
 type Conversation struct {
-	config           conversationConfig
-	outputFactory    IOutputFactory
-	flowConversation IConversation
+	config        conversationConfig
+	outputFactory IOutputFactory
+	rootPath      string
 }
 
 // NewConversation creates a new instance of a conversation.
 func NewConversation(file IConversationFile, outputFactory IOutputFactory) (IConversation, error) {
-	conv := &Conversation{outputFactory: outputFactory}
+	conv := &Conversation{outputFactory: outputFactory, rootPath: file.FilePath()}
 	err := file.Parse(&conv.config)
 	if err != nil {
 		return NullConversation, err
@@ -62,22 +67,13 @@ func NewConversationFromPath(conversationFilePath string, outputFactory IOutputF
 	return NewConversation(file, outputFactory)
 }
 
-func newContinuedConversation(
-	config conversationConfig,
-	flowConversation IConversation,
-	outputFactory IOutputFactory) IConversation {
-	return &Conversation{config: config, outputFactory: outputFactory, flowConversation: flowConversation}
-}
-
 // Continue finds the next output to the given previous output and input.
 func (conv *Conversation) Continue(input IInput, ctx IConversationContext) IConversationContext {
 	nextFlowName := conv.config.Triggers[input.Name()]
 	if len(nextFlowName) == 0 {
 		nextFlowName = conv.config.DefaultTrigger
 	}
-
-	// TODO
-	return ctx
+	return conv.newFlowConversation(nextFlowName).Continue(input, ctx)
 }
 
 // Empty returns true when the conversation is not initialized.
@@ -86,7 +82,31 @@ func (conv *Conversation) Empty() bool {
 	return false
 }
 
-// FlowName returns name of the current flow.
+// FlowName returns empty string because this type of conversation doesn’t have a flow.
 func (conv *Conversation) FlowName() string {
-	return conv.flowConversation.FlowName()
+	return ""
+}
+
+func (conv *Conversation) newFlowConversationFilePath(flowName string) string {
+	return path.Join(
+		filepath.Dir(conv.rootPath),
+		"flows",
+		flowName+".yml")
+}
+
+func (conv *Conversation) newFlowConversationFile(flowName string) IConversationFile {
+	file, err := NewConversationFile(conv.newFlowConversationFilePath(flowName))
+	if err != nil {
+		panic(err)
+	}
+	return file
+}
+
+func (conv *Conversation) newFlowConversation(flowName string) IConversation {
+	file := conv.newFlowConversationFile(flowName)
+	flowConv, err := NewFlowConversation(file, conv.outputFactory)
+	if err != nil {
+		panic(err)
+	}
+	return flowConv
 }

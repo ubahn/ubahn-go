@@ -32,12 +32,12 @@ func Test_FlowConversation_Continue_StartWithoutRoot(t *testing.T) {
 }
 
 func Test_FlowConversation_Continue_ExpectedInput(t *testing.T) {
-	ctx := startTestFlowConversationDefault()
+	originalCtx := startTestFlowConversationDefault()
 
-	ctx = ctx.Conversation().Continue(newFakeInput("i-yes"), ctx)
+	ctx := originalCtx.Conversation().Continue(newFakeInput("i-yes"), originalCtx)
 	assert.Equal(t, "weather-report", ctx.LastOutput().Name())
 
-	ctx = ctx.Conversation().Continue(newFakeInput("i-no"), ctx)
+	ctx = originalCtx.Conversation().Continue(newFakeInput("i-no"), originalCtx)
 	assert.Equal(t, "bye", ctx.LastOutput().Name())
 }
 
