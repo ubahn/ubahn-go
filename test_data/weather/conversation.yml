@@ -1,7 +1,5 @@
 version: 2
 
-defaultTrigger: none
-
 triggers:
   i-user-says-welcome: default
   i-asks-city-weather: city-weather

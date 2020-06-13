@@ -63,7 +63,6 @@ func NewConversationFromPath(conversationFilePath string, outputFactory IOutputF
 	if err != nil {
 		return NullConversation, err
 	}
-
 	return NewConversation(file, outputFactory)
 }
 
@@ -71,6 +70,9 @@ func NewConversationFromPath(conversationFilePath string, outputFactory IOutputF
 func (conv *Conversation) Continue(input IInput, ctx IConversationContext) IConversationContext {
 	nextFlowName := conv.config.Triggers[input.Name()]
 	if len(nextFlowName) == 0 {
+		if len(conv.config.DefaultTrigger) == 0 {
+			return NewConversationContext(conv, BlankOutput)
+		}
 		nextFlowName = conv.config.DefaultTrigger
 	}
 	return conv.newFlowConversation(nextFlowName).Continue(input, ctx)
@@ -104,7 +106,7 @@ func (conv *Conversation) newFlowConversationFile(flowName string) IConversation
 
 func (conv *Conversation) newFlowConversation(flowName string) IConversation {
 	file := conv.newFlowConversationFile(flowName)
-	flowConv, err := NewFlowConversation(file, conv.outputFactory)
+	flowConv, err := NewFlowConversation(file, conv.outputFactory, conv)
 	if err != nil {
 		panic(err)
 	}

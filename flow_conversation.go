@@ -7,18 +7,23 @@ import (
 // FlowConversation is the implementation of IConversation, specific to a flow.
 // It's continued based on the sequence, defined in the given YAML file.
 type FlowConversation struct {
-	config        flowConfig
-	outputFactory IOutputFactory
-	flowName      string
+	config           flowConfig
+	outputFactory    IOutputFactory
+	flowName         string
+	rootConversation IConversation
 }
 
 // NewFlowConversation creates a new instance of a flow conversation.
-func NewFlowConversation(file IConversationFile, outputFactory IOutputFactory) (IConversation, error) {
+func NewFlowConversation(file IConversationFile,
+	outputFactory IOutputFactory,
+	rootConversation IConversation) (IConversation, error) {
 	if file.Empty() {
 		return NullConversation, fmt.Errorf("Main conversation file is not initialized")
 	}
 
-	conv := &FlowConversation{outputFactory: outputFactory, flowName: NewFlowName(file)}
+	conv := &FlowConversation{outputFactory: outputFactory,
+		flowName:         NewFlowName(file),
+		rootConversation: rootConversation}
 	err := file.Parse(&conv.config)
 	if err != nil {
 		return NullConversation, err
@@ -30,8 +35,10 @@ func NewFlowConversation(file IConversationFile, outputFactory IOutputFactory) (
 // If no suitable output found, it returns blank output.
 func (conv *FlowConversation) Continue(input IInput, ctx IConversationContext) IConversationContext {
 	nextOutputName := conv.matchOutput(ctx.LastOutput(), input)
-	nextOutput := conv.outputFactory.Create(nextOutputName)
-	return NewConversationContext(conv, nextOutput)
+	if nextOutputName == BlankOutputName {
+		return conv.continueInRootConversation(input)
+	}
+	return conv.newConversationContext(nextOutputName)
 }
 
 // Empty returns true when the conversation is not initialized.
@@ -48,8 +55,14 @@ func (conv *FlowConversation) FlowName() string {
 // matchOutput tries to next output name, considering previous output and user input.
 func (conv *FlowConversation) matchOutput(prevOutput IOutput, input IInput) string {
 	prevOutputConfig := conv.findPrevOutputConfig(prevOutput)
-	if prevOutputConfig.empty || prevOutputConfig.Exit {
-		// If there was no previous output or we don't know it, we start with root output
+
+	// On flow exit we return blank output and the conversation will return to the root conversation.
+	if prevOutputConfig.Exit {
+		return BlankOutputName
+	}
+
+	// If there was no previous output or we don't know it, we start with root output
+	if prevOutputConfig.empty {
 		return conv.resolveRootOutput()
 	}
 
@@ -101,4 +114,17 @@ func (conv *FlowConversation) firstOutput() string {
 		return key
 	}
 	return conv.fallback()
+}
+
+func (conv *FlowConversation) createRootConversationContext() IConversationContext {
+	return NewConversationContext(conv.rootConversation, BlankOutput)
+}
+
+func (conv *FlowConversation) continueInRootConversation(input IInput) IConversationContext {
+	return conv.rootConversation.Continue(input, conv.createRootConversationContext())
+}
+
+func (conv *FlowConversation) newConversationContext(outputName string) IConversationContext {
+	output := conv.outputFactory.Create(outputName)
+	return NewConversationContext(conv, output)
 }

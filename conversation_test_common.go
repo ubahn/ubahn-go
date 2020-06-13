@@ -2,6 +2,7 @@ package ubahn
 
 import (
 	"fmt"
+	"path"
 )
 
 func newFakeInput(name string) IInput {
@@ -18,13 +19,25 @@ func continueConversation(conv IConversation, prevOutput, input string) IConvers
 }
 
 func newTestConversationFile(convName, testFileName string) (*ConversationFile, error) {
-	path := fmt.Sprintf("./test_data/%s/flows/%s", convName, testFileName)
-	return NewConversationFile(path)
+	return NewConversationFile(newTestConversationFilePath(convName, testFileName))
+}
+
+func newTestConversationFilePath(convName, testFileName string) string {
+	return fmt.Sprintf("./test_data/%s/flows/%s", convName, testFileName)
 }
 
 func newTestFlowConversation(convName, testFileName string) (IConversation, error) {
 	convFile, _ := newTestConversationFile(convName, testFileName)
-	return NewFlowConversation(convFile, NewNullOutputFactory())
+	rootConvFile, err := NewConversationFile(path.Join("./test_data", convName, "conversation.yml"))
+	if err != nil {
+		panic(err)
+	}
+	outputFactory := NewNullOutputFactory()
+	rootConv, err := NewConversation(rootConvFile, outputFactory)
+	if err != nil {
+		panic(err)
+	}
+	return NewFlowConversation(convFile, outputFactory, rootConv)
 }
 
 func startTestFlowConversation(convName, testFileName, startInput string) IConversationContext {
