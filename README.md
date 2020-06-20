@@ -7,7 +7,7 @@ See the [whitepaper](https://github.com/ubahn/whitepaper) for generic informatio
 [![Build status](https://ci.appveyor.com/api/projects/status/xo85r9pinevo74f1?svg=true)](https://ci.appveyor.com/project/slavikdev/ubahn-go)
 [![Maintainability](https://api.codeclimate.com/v1/badges/7c6ac2dd052e2c817a90/maintainability)](https://codeclimate.com/github/ubahn/ubahn-go/maintainability)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ubahn/ubahn-go)](https://goreportcard.com/report/github.com/ubahn/ubahn-go)
-[![GoDoc](https://godoc.org/github.com/ubahn/ubahn-go?status.svg)](https://godoc.org/github.com/ubahn/ubahn-go)
+[![GoDoc](https://godoc.org/github.com/ubahn/ubahn-go?status.svg)](https://pkg.go.dev/github.com/ubahn/ubahn-go)
 
 ## Overview
 
@@ -22,8 +22,8 @@ To install the package run:
 
     go get github.com/ubahn/ubahn-go
 
-## Current focus and priorities
+## Next steps
 
-* Ubahn 2.0
-* Contribution guidelines
-* Documentation
+- [ ] Create examples and documentation
+- [ ] Create contribution guidelines
+- [ ] Move towards ML vs rule based approach
