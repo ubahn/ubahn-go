@@ -45,6 +45,17 @@ type Conversation struct {
 	rootPath      string
 }
 
+// RestoreConversation creates an instance of either flow or root conversation, based on input parameters.
+// This function is useful when previous conversation state was stored in a session and needs to be restored later.
+func RestoreConversation(rootPath, flowName string, outputFactory IOutputFactory) (IConversation, error) {
+	rootConv, err := NewConversationFromPath(path.Join(rootPath, "conversation.yml"), outputFactory)
+	if err != nil || len(flowName) == 0 {
+		return rootConv, err
+	}
+
+	return (rootConv.(*Conversation)).newFlowConversation(flowName)
+}
+
 // NewConversation creates a new instance of a conversation.
 func NewConversation(file IConversationFile, outputFactory IOutputFactory) (IConversation, error) {
 	conv := &Conversation{outputFactory: outputFactory, rootPath: file.FilePath()}
@@ -75,7 +86,11 @@ func (conv *Conversation) Continue(input IInput, ctx IConversationContext) IConv
 		}
 		nextFlowName = conv.config.DefaultTrigger
 	}
-	return conv.newFlowConversation(nextFlowName).Continue(input, ctx)
+	flowConv, err := conv.newFlowConversation(nextFlowName)
+	if err != nil {
+		panic(err)
+	}
+	return flowConv.Continue(input, ctx)
 }
 
 // Empty returns true when the conversation is not initialized.
@@ -104,11 +119,7 @@ func (conv *Conversation) newFlowConversationFile(flowName string) IConversation
 	return file
 }
 
-func (conv *Conversation) newFlowConversation(flowName string) IConversation {
+func (conv *Conversation) newFlowConversation(flowName string) (IConversation, error) {
 	file := conv.newFlowConversationFile(flowName)
-	flowConv, err := NewFlowConversation(file, conv.outputFactory, conv)
-	if err != nil {
-		panic(err)
-	}
-	return flowConv
+	return NewFlowConversation(file, conv.outputFactory, conv)
 }

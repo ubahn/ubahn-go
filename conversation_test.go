@@ -2,6 +2,7 @@ package ubahn
 
 import (
 	"fmt"
+	"path"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,6 +17,36 @@ func Test_NullConversation_Continue(t *testing.T) {
 
 func Test_NullConversation_Empty(t *testing.T) {
 	assert.True(t, NullConversation.Empty())
+}
+
+func Test_RestoreConversation_Root(t *testing.T) {
+	path := testConversationPath("weather")
+	conv, err := RestoreConversation(path, "", NewNullOutputFactory())
+
+	assert.Nil(t, err)
+	assert.False(t, conv.Empty())
+	_, ok := conv.(*Conversation)
+	assert.True(t, ok)
+}
+
+func Test_RestoreConversation_Flow(t *testing.T) {
+	path := testConversationPath("weather")
+	flowName := "city-weather"
+	conv, err := RestoreConversation(path, flowName, NewNullOutputFactory())
+
+	assert.Nil(t, err)
+	assert.False(t, conv.Empty())
+	_, ok := conv.(*FlowConversation)
+	assert.True(t, ok)
+	assert.Equal(t, flowName, conv.FlowName())
+}
+
+func Test_RestoreConversation_NotExists(t *testing.T) {
+	path := testConversationPath("blah")
+	conv, err := RestoreConversation(path, "yoyo", NewNullOutputFactory())
+
+	assert.NotNil(t, err)
+	assert.True(t, conv.Empty())
 }
 
 func Test_NewConversation(t *testing.T) {
@@ -52,10 +83,10 @@ func assertConversationCreated(t *testing.T, convName string) IConversation {
 }
 
 func createConversation(convName string) (IConversation, error) {
-	path := fmt.Sprintf("./test_data/%s/conversation.yml", convName)
-	file, err := NewConversationFile(path)
-	if err != nil {
-		panic(err)
-	}
-	return NewConversation(file, NewNullOutputFactory())
+	path := path.Join(testConversationPath(convName), "conversation.yml")
+	return NewConversationFromPath(path, NewNullOutputFactory())
+}
+
+func testConversationPath(convName string) string {
+	return fmt.Sprintf("./test_data/%s/", convName)
 }
